@@ -1,4 +1,4 @@
-package com.rtb.promptrefiner;
+package com.rtb.promptrefiner.service;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentConfig;

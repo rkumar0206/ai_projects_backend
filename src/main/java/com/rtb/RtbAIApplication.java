@@ -1,6 +1,7 @@
 package com.rtb;
 
 import com.google.genai.Client;
+import com.rtb.the_random_value.colors.service.RandomColorsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;

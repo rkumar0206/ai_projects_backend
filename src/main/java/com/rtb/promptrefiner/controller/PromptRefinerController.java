@@ -1,7 +1,6 @@
 package com.rtb.promptrefiner.controller;
 
-import com.rtb.promptrefiner.PromptRefinerService;
-import com.rtb.promptrefiner.model.RefinedPromptResponse;
+import com.rtb.promptrefiner.service.PromptRefinerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
