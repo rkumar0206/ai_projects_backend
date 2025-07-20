@@ -1,4 +1,4 @@
-package com.rtb.the_random_value.colors.service.dto;
+package com.rtb.the_random_value.colors.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
