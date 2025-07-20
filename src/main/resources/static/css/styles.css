@@ -1,0 +1,56 @@
+body {
+
+    background-color: blanchedalmond;
+}
+
+.container {
+
+    margin: 30px auto;
+    width: 100%;
+    padding: 20px;
+}
+
+.card {
+
+    border: 1px solid darkgray;
+    padding: 1px;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    width: 60%;
+    margin: 0 auto;
+}
+
+.card header {
+
+    font-size: 20px;
+    padding: 10px;
+    text-align: center;
+}
+
+.heading {
+
+    width: 100%;
+    background-color: beige;
+    margin: 0;
+    padding: 0;
+
+}
+
+.radioButtons {
+    padding: 5px;
+    display: inline-block;
+}
+
+.contentWithLoading {
+
+    display: flex;
+    justify-content: center;
+}
+
+.loadingObject {
+
+    margin: auto;
+    width: 100px;
+    height: 100px;
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/k8-deployment-style.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<h1>Deployment Request Form</h1>
+
+<form id="deploymentZipForm">
+
+    <label>Framework:</label>
+    <select name="framework">
+        <option value="SPRINGBOOT">Spring Boot</option>
+    </select>
+
+    <label>Application Name:</label>
+    <input type="text" name="appName" required/>
+
+    <fieldset>
+        <legend>Dockerfile Config</legend>
+        <label>Base Image:</label>
+        <input type="text" name="dockerfileConfig.baseImage" required/>
+
+        <label>Artifact Name:</label>
+        <input type="text" name="dockerfileConfig.artifactName" required/>
+
+        <label>Tag:</label>
+        <input type="text" name="dockerfileConfig.tag" required/>
+
+        <label>Labels (key=value per line):</label>
+        <textarea name="dockerfileConfig.labels"></textarea>
+
+        <label>Arguments (key=value per line):</label>
+        <textarea name="dockerfileConfig.arguments"></textarea>
+    </fieldset>
+
+    <label>Port:</label>
+    <input type="number" name="port" required/>
+
+    <label>Environment Variables (key=value per line):</label>
+    <textarea name="envVariables"></textarea>
+
+    <label>Secrets (key=value per line):</label>
+    <textarea name="secrets"></textarea>
+
+    <label>Replicas:</label>
+    <input type="number" name="replicas" required/>
+
+    <fieldset>
+        <legend>Resource Limits</legend>
+        <label>CPU:</label>
+        <input type="text" name="resourceLimits.cpu"/>
+
+        <label>Memory:</label>
+        <input type="text" name="resourceLimits.memory"/>
+    </fieldset>
+
+    <label>Enable Ingress:</label>
+    <select name="enableIngress">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+    </select>
+
+    <label>Ingress Host:</label>
+    <input type="text" name="ingressHost"/>
+
+    <label>Enable HPA:</label>
+    <select name="enableHPA">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+    </select>
+
+    <fieldset>
+        <legend>HPA Config</legend>
+        <label>Min Replicas:</label>
+        <input type="number" name="hpa.minReplicas"/>
+
+        <label>Max Replicas:</label>
+        <input type="number" name="hpa.maxReplicas"/>
+
+        <label>Target CPU Utilization %:</label>
+        <input type="number" name="hpa.targetCPUUtilizationPercentage"/>
+    </fieldset>
+
+    <input type="submit" value="Submit Deployment"/>
+</form>
+
+<script src="/js/k8-download.js"></script>
+
+</body>
+</html>

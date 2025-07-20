@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/categoriesStyle.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Get a random result based on any of the below categories</h2>
+
+    <div id="categories">
+
+        <th:block th:each="category, iStat : ${categories}">
+
+            <!--When div is clicked then anchor tag will be also clicked-->
+            <div class="categoryItem" onclick="this.querySelector('a').click()">
+
+                <a th:href="@{'/the-random-value/categories/' + ${category.categoryName}}">
+
+                    <img alt="Category image" th:height="100" th:if="${category.categoryImageUrl == ''}"
+                         th:src="@{'https://drive.google.com/uc?export=view&id=1vFOaBnvw3CgxTKqIQY3xVuTP99-6ukKO'}"
+                         th:width="250"/>
+
+                    <img alt="Category image" th:height="100" th:src="@{${category.categoryImageUrl}}"
+                         th:unless="${category.categoryImageUrl == ''}" th:width="250"/>
+
+                    <hr>
+                    <span class="categoryName" th:text="${category.categoryName}"></span>
+                </a>
+
+            </div>
+
+            <br th:if="${(iStat.index + 1) % 3 ==  0}">
+
+        </th:block>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

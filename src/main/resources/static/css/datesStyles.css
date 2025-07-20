@@ -1,0 +1,73 @@
+#theDateDiv {
+
+    display: flex;
+    justify-content: center;
+}
+
+.date {
+
+    font-size: 25px;
+    padding: 10px;
+    margin: 15px 10px 10px;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    border-top: 6px solid plum;
+}
+
+.refresh {
+
+    display: flex;
+    justify-content: center;
+}
+
+.refreshBtn {
+
+    width: 30%;
+    height: 30px;
+    background-color: blueviolet;
+    color: white;
+    border-radius: 10px;
+    margin: 10px 10px 20px;
+    border: 1px solid whitesmoke;
+
+}
+
+#date_importance_heading_container {
+
+    display: flex;
+    align-items: center;
+}
+
+#date_importance_heading_container header {
+    flex: 1;
+}
+
+#date_importance_heading_container i {
+
+    padding: 0 1rem;
+}
+
+.menuDropdown {
+
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.menuDropdown .radioButtons:hover {
+    background-color: #ddd;
+}
+
+.menuDropdown:hover .dropdown-content {
+    display: block;
+}

@@ -1,0 +1,91 @@
+.resultArea {
+
+    font-size: 18px;
+    margin: 20px;
+    text-align: center;
+    line-height: 30px;
+}
+
+.optionsContainer {
+
+    padding: 10px;
+    background-color: #f2f2f2;
+    margin: 5px;
+    border-radius: 5px;
+    flex: 1 0 5px;
+}
+
+.optionsContainer strong {
+
+    display: inline-block;
+    margin: 5px;
+    font-size: small;
+}
+
+.filter {
+
+    display: flex;
+    justify-content: center;
+}
+
+/* #evenOdd{
+
+    flex: 1 0 10px;
+}
+#base{
+    flex: 1 0 10px;
+} */
+
+.refreshBtn {
+
+    width: 30%;
+    height: 30px;
+    background-color: blueviolet;
+    color: white;
+    border-radius: 10px;
+    margin: 10px 10px 20px;
+    border: 1px solid whitesmoke;
+
+}
+
+.refresh {
+
+    display: flex;
+    justify-content: center;
+}
+
+.inputs {
+
+    display: flex;
+    justify-content: center;
+}
+
+.lengthRange {
+
+    width: 90%;
+
+}
+
+#numberLength label{
+
+    font-size: small;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+#range_error {
+
+    font-size: small;
+    padding: 2px;
+    color: orangered;
+}
+.disabled {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+input[type = "checkbox"] {
+
+    margin: 10px;
+
+}

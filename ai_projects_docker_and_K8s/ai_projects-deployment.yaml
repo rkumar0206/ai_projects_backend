@@ -1,0 +1,35 @@
+# ai_projects-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-projects-deployment
+  labels:
+    app: ai_projects
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai_projects
+  template:
+    metadata:
+      labels:
+        app: ai_projects
+    spec:
+      containers:
+      - name: ai-projects
+        image: ai_projects:v1.0.0 # Tag your image appropriately (e.g., ai_projects:v1.0.0 or ai_projects:latest)
+        ports:
+        - containerPort: 7070
+        env:
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-projects-secret
+              key: GEMINI_API_KEY
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests: # It's good practice to define requests as well
+            cpu: 250m
+            memory: 512Mi

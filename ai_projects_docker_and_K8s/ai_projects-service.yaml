@@ -1,0 +1,16 @@
+# ai_projects-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-projects-service
+  labels:
+    app: ai_projects
+spec:
+  selector:
+    app: ai_projects
+  ports:
+  - protocol: TCP
+    port: 7070        # The port the service exposes
+    targetPort: 7070  # The port the container listens on
+    nodePort: 30070   # Optional: Exposes the service on a specific port on each node (between 30000-32767)
+  type: NodePort      # Use NodePort for external access, ClusterIP for internal only

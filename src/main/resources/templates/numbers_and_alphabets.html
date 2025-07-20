@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Numbers & Alphabets - theRandomValue</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/numbersAndAlphabetsStyle.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script th:src="@{/js/numbersAndAlphabets.js}"></script>
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="card" id="numberCard">
+
+        <div class="heading">
+            <header>
+                Number
+            </header>
+        </div>
+
+        <div class="resultArea" id="numberResultArea">5432</div>
+
+        <hr>
+
+        <div class="filter">
+
+            <div class="optionsContainer" id="evenOdd">
+
+                <div class="radioButtons">
+
+                    <input type="radio" checked id="noneRB" name="evenOddPrime" value="none">
+                    <label for="noneRB">none</label>
+
+                </div>
+                <div class="radioButtons">
+
+                    <input type="radio" id="evenRB" name="evenOddPrime" value="even">
+                    <label for="evenRB">even</label>
+
+                </div>
+                <div class="radioButtons">
+
+                    <input type="radio" id="oddRB" name="evenOddPrime" value="odd">
+                    <label for="oddRB">odd</label>
+
+                </div>
+                <div class="radioButtons">
+
+                    <input type="radio" id="primeRB" name="evenOddPrime" value="prime">
+                    <label for="primeRB">prime</label>
+
+                </div>
+
+            </div>
+            <div class="optionsContainer" id="base">
+
+                <div class="radioButtons">
+
+                    <input type="radio" id="hexaRB" name="base" value="hexadecimal">
+                    <label for="hexaRB">Hexadecimal</label>
+
+                </div>
+                <div class="radioButtons">
+
+                    <input type="radio" checked id="decimalRB" name="base" value="decimal">
+                    <label for="decimalRB">Decimal</label>
+
+                </div>
+                <div class="radioButtons">
+
+                    <input type="radio" id="octalRB" name="base" value="octal">
+                    <label for="octalRB">Octal</label>
+
+                </div>
+                <div class="radioButtons">
+
+                    <input type="radio" id="binaryRB" name="base" value="binary">
+                    <label for="binaryRB">Binary</label>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="filter">
+
+            <div class="optionsContainer" id="range">
+
+                <strong>Range</strong><br>
+
+                <input type="number" value="1" min="1" maxlength="15"
+                       oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                       id="startRangeInput">
+                <strong>to</strong>
+                <input type="number" value="1000" min="2" maxlength="15"
+                       oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                       id="endRangeInput">
+                <p id='range_error'>* End value should be grater than the start value.</p>
+
+            </div>
+
+            <div class="optionsContainer" id="numberLengthDiv">
+
+                <strong>Length</strong><br>
+                <input type="range" id="numberLengthRange" min="1" max="70" value="4" class="lengthRange">
+                <label class="label" id="numberLengthRangeLabel" for="numberLengthRange">4</label>
+            </div>
+
+
+        </div>
+        <hr>
+
+        <div class="refresh">
+
+            <button class="refreshBtn" id="numberRefreshBtn">Refresh</button>
+
+        </div>
+    </div>
+
+    <br>
+
+    <div class="card" id="passwordCard">
+
+        <div class="heading">
+            <header>
+                Password
+            </header>
+        </div>
+
+        <div class="resultArea" id="passwordResultArea">%$3168(RY67</div>
+
+        <hr>
+
+        <div class="filter">
+
+            <div class="optionsContainer" id="mustIncludeCharactersDiv">
+
+                <strong>Must include characters</strong><br>
+
+                <input type="text" maxlength="15" placeholder="Enter characters" id="mustIncludeCharacters">
+
+            </div>
+
+            <div class="optionsContainer" id="passwordLengthDiv">
+
+                <strong>Length</strong><br>
+                <input type="range" id="passwordLengthRange" min="4" max="70" value="8" class="lengthRange">
+                <label class="label" id="passwordLengthRangeLabel" for="passwordLengthRange">8</label>
+            </div>
+
+        </div>
+        <div class="filter">
+
+            <div class="optionsContainer" id="passwordFilters">
+
+                <input type="checkbox" id="specialCharactersCB" checked value="true">
+                <label for="specialCharactersCB">Special characters (!@#$&%^*_+)</label><br>
+                <input type="checkbox" id="includeDigitsCB" checked>
+                <label for="includeDigitsCB">Include digits</label><br>
+                <input type="checkbox" id="includeUpperCaseCB" checked>
+                <label for="includeUpperCaseCB">Include upper case</label><br>
+                <input type="checkbox" id="includeLowerCaseCB" checked>
+                <label for="includeLowerCaseCB">Include lower case</label><br>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="refresh">
+
+            <button class="refreshBtn" id="passwordRefreshBtn">Refresh</button>
+
+        </div>
+    </div>
+
+    <br>
+
+    <div class="card" id="uuidCard">
+
+        <div class="heading">
+            <header>
+                UUID
+            </header>
+        </div>
+
+        <div class="resultArea" id="uuidResultArea"></div>
+
+        <hr>
+
+        <div class="refresh">
+
+            <button class="refreshBtn" id="uuidRefreshBtn">Refresh</button>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</body>
+</html>

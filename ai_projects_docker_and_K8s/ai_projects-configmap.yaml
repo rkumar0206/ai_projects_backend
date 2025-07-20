@@ -1,0 +1,10 @@
+# ai_projects-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-projects-config
+  labels:
+    app: ai_projects
+# No specific environment variables were provided for ConfigMap,
+# so this ConfigMap is created as empty.
+data: {}

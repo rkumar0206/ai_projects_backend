@@ -1,0 +1,37 @@
+# ai_projects-commands.yaml
+# Commands to build the Docker image and deploy to Kubernetes
+
+# 1. Build the Docker image
+# Ensure you are in the directory containing your Dockerfile and Spring Boot source code.
+# The image will be tagged as 'ai_projects:v1.0.0'
+docker build -t ai_projects:v1.0.0 .
+
+# 2. Deploy Kubernetes Secret
+# This creates the secret containing your API key.
+kubectl apply -f ai_projects-secret.yaml
+
+# 3. Deploy Kubernetes ConfigMap
+# This creates an empty ConfigMap for potential future configuration.
+kubectl apply -f ai_projects-configmap.yaml
+
+# 4. Deploy Kubernetes Deployment
+# This creates the Deployment managing your application pods.
+kubectl apply -f ai_projects-deployment.yaml
+
+# 5. Deploy Kubernetes Service
+# This creates the Service to expose your application within or outside the cluster.
+kubectl apply -f ai_projects-service.yaml
+
+# Optional: Verify your deployment
+# Get the status of your pods
+# kubectl get pods -l app=ai_projects
+
+# Get the status of your deployment
+# kubectl get deployment ai-projects-deployment
+
+# Get the status of your service
+# kubectl get service ai-projects-service
+
+# If using NodePort, find the NodePort to access the service:
+# kubectl get service ai-projects-service -o wide
+# You can then access your application at <NodeIP>:<NodePort> (e.g., 192.168.1.100:30070)
