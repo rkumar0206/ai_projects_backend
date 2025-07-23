@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
+import com.rtb.common.service.CommonService;
 import com.rtb.the_random_value.colors.dto.PaletteDTO;
 import com.rtb.the_random_value.colors.dto.PaletteResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -19,24 +20,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RandomColorsService {
 
-    private final Client client;
-    public static final String MODEL = "gemini-2.5-flash";
+    private final CommonService commonService;
 
     public PaletteResponseDTO getRandomColorPalette() throws JsonProcessingException {
 
         String prompt = generatePrompt();
-
-        GenerateContentResponse response =
-                client.models.generateContent(
-                        MODEL,
-                        prompt,
-                        GenerateContentConfig.builder()
-                                .responseMimeType("text/plain")
-                                //.responseMimeType("application/json")
-                                .build()
-                );
-
-        String responseText = response.text();
+        String responseText = commonService.getPromptTextResult(prompt);
         System.out.println(responseText);
 
         if (StringUtils.hasLength(responseText)) {

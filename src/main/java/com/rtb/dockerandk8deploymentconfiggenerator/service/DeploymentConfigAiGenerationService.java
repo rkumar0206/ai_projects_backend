@@ -1,8 +1,6 @@
 package com.rtb.dockerandk8deploymentconfiggenerator.service;
 
-import com.google.genai.Client;
-import com.google.genai.types.GenerateContentConfig;
-import com.google.genai.types.GenerateContentResponse;
+import com.rtb.common.service.CommonService;
 import com.rtb.dockerandk8deploymentconfiggenerator.enums.Framework;
 import com.rtb.dockerandk8deploymentconfiggenerator.model.DeploymentRequest;
 import com.rtb.dockerandk8deploymentconfiggenerator.model.DockerfileConfig;
@@ -27,8 +25,7 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor
 public class DeploymentConfigAiGenerationService {
 
-    private final Client client;
-    public static final String MODEL = "gemini-2.5-flash";
+    private final CommonService commonService;
 
     public byte[] getK8ConfigZip(DeploymentRequest deploymentRequest) throws IOException {
 
@@ -40,17 +37,7 @@ public class DeploymentConfigAiGenerationService {
 
         String prompt = buildPrompt(dr);
 
-        GenerateContentResponse response =
-                client.models.generateContent(
-                        MODEL,
-                        prompt,
-                        GenerateContentConfig.builder()
-                                .responseMimeType("text/plain")
-                                //.responseMimeType("application/json")
-                                .build()
-                );
-
-        String rawText = response.text();
+        String rawText = commonService.getPromptTextResult(prompt);
         System.out.println(rawText);
 
         Map<String, String> files = new LinkedHashMap<>();

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.genai.Client;
-import com.google.genai.types.GenerateContentConfig;
-import com.google.genai.types.GenerateContentResponse;
-import com.rtb.the_random_value.colors.dto.PaletteDTO;
+import com.rtb.common.service.CommonService;
 import com.rtb.the_random_value.repositories.dto.RandomRepositoryDTO;
 import com.rtb.the_random_value.repositories.dto.RandomRepositoryResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +17,13 @@ import java.util.List;
 @Service
 public class RandomRepoService {
 
-    private final Client client;
-    public static final String MODEL = "gemini-2.5-flash";
+    private final CommonService commonService;
 
     public RandomRepositoryResponseDTO getRandomRepositories(Integer count, String languagesUsed) throws JsonProcessingException {
 
         String prompt = generatePrompt(count, languagesUsed);
 
-        GenerateContentResponse response =
-                client.models.generateContent(
-                        MODEL,
-                        prompt,
-                        GenerateContentConfig.builder()
-                                .responseMimeType("text/plain")
-                                .build()
-                );
-
-        String responseText = response.text();
+        String responseText = commonService.getPromptTextResult(prompt);
         System.out.println(responseText);
 
         if (StringUtils.hasLength(responseText)) {

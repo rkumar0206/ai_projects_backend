@@ -1,8 +1,6 @@
 package com.rtb.promptrefiner.service;
 
-import com.google.genai.Client;
-import com.google.genai.types.GenerateContentConfig;
-import com.google.genai.types.GenerateContentResponse;
+import com.rtb.common.service.CommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,25 +8,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PromptRefinerService {
 
-    private final Client client;
-    public static final String MODEL = "gemini-2.5-flash";
+    private final CommonService commonService;
 
     public String refineMyPrompt(String rawText) {
 
         String prompt = generatePrompt(rawText);
-
-        GenerateContentResponse response =
-                client.models.generateContent(
-                        MODEL,
-                        prompt,
-                        GenerateContentConfig.builder()
-                                .responseMimeType("text/plain")
-                                //.responseMimeType("application/json")
-                                .build()
-                );
-
-        System.out.println(response.text());
-        return response.text();
+        return commonService.getPromptTextResult(prompt);
     }
 
     private String generatePrompt(String rawText) {
