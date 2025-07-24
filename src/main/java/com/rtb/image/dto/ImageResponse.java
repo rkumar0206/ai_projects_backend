@@ -1,4 +1,4 @@
-package com.rtb.the_random_value.images.dto;
+package com.rtb.image.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

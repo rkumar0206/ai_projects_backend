@@ -1,14 +1,14 @@
-package com.rtb.the_random_value.images.service;
+package com.rtb.image.service;
 
 import com.google.genai.Client;
 import com.google.genai.types.*;
 import com.rtb.common.service.CommonService;
-import com.rtb.the_random_value.images.dto.ImageResponse;
+import com.rtb.image.dto.ImageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -21,9 +21,24 @@ public class ImageGenerationService {
     private final Client client;
     private final CommonService commonService;
 
-    public ImageResponse generateImage(String keywords) throws IOException {
+    public ImageResponse generateImageByPrompt(String prompt) throws IOException {
+
+        if (!StringUtils.hasLength(prompt)) {
+            return null;
+        }
+
+        return generateImage(prompt.trim());
+
+    }
+
+    public ImageResponse generateRandomImage(String keywords) throws IOException {
 
         String imagePrompt = generateImagePrompt(keywords);
+
+        return generateImage(imagePrompt);
+    }
+
+    private ImageResponse generateImage(String prompt) throws IOException {
 
         String modelName = "gemini-2.0-flash-preview-image-generation";
 
@@ -31,7 +46,7 @@ public class ImageGenerationService {
                 .responseModalities(List.of("TEXT", "IMAGE"))
                 .build();
 
-        Content content = Content.fromParts(Part.fromText(imagePrompt));
+        Content content = Content.fromParts(Part.fromText(prompt));
 
         GenerateContentResponse response = client.models.generateContent(
                 modelName,
@@ -59,7 +74,7 @@ public class ImageGenerationService {
         for (Part part : parts) {
             if (part.inlineData().isPresent()) {
                 Blob blob = part.inlineData().get();
-                return new ImageResponse(imagePrompt, ImageIO.read(new ByteArrayInputStream(blob.data().get())));
+                return new ImageResponse(prompt, ImageIO.read(new ByteArrayInputStream(blob.data().get())));
             }
         }
 
@@ -92,6 +107,7 @@ public class ImageGenerationService {
 //            });
 //        }
         return null;
+
     }
 
     private String generateImagePrompt(String keywords) {

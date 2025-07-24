@@ -1,4 +1,4 @@
-package com.rtb.the_random_value.images.controller;
+package com.rtb.image.controller;
 
 import com.rtb.image.dto.ImageResponse;
 import com.rtb.image.service.ImageGenerationService;
@@ -21,16 +21,16 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/the-random-value/image")
-public class RandomImageGenerationController {
+@RequestMapping("/api/generator/image")
+public class ImageGenerationController {
 
     private final ImageGenerationService imageGenerationService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, String>> getImageAndText(@RequestParam(value = "keywords", required = false) String keywords) {
+    public ResponseEntity<Map<String, String>> getImageAndText(@RequestParam(value = "prompt", required = false) String prompt) {
         try {
 
-            ImageResponse imageResponse = imageGenerationService.generateRandomImage(keywords);
+            ImageResponse imageResponse = imageGenerationService.generateImageByPrompt(prompt);
 
             BufferedImage image = imageResponse.getImage();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -42,6 +42,18 @@ public class RandomImageGenerationController {
             response.put("image", "data:image/png;base64," + base64Image);
 
             return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to generate or send image", e);
+        }
+    }
+
+    @GetMapping(path = "/buffered-image", produces = MediaType.IMAGE_PNG_VALUE)
+    public void getImage(HttpServletResponse response, @RequestParam("prompt") String prompt) throws IOException {
+        try {
+            BufferedImage image = imageGenerationService.generateImageByPrompt(prompt).getImage(); // Returns BufferedImage
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+            ImageIO.write(image, "png", response.getOutputStream());
+            response.flushBuffer();
         } catch (IOException e) {
             throw new RuntimeException("Failed to generate or send image", e);
         }
