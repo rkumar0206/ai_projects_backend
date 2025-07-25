@@ -1,15 +1,13 @@
 package com.rtb.image.controller;
 
 import com.rtb.image.dto.ImageResponse;
+import com.rtb.image.dto.PartialImageResponse;
 import com.rtb.image.service.ImageGenerationService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -17,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,16 +31,40 @@ public class ImageGenerationController {
 
             ImageResponse imageResponse = imageGenerationService.generateImageByPrompt(prompt);
 
-            BufferedImage image = imageResponse.getImage();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", baos);
-            String base64Image = Base64.getEncoder().encodeToString(baos.toByteArray());
+            String base64Image;
+
+            if (imageResponse.getImageData() != null) {
+                base64Image = Base64.getEncoder().encodeToString(imageResponse.getImageData());
+            }else {
+
+                BufferedImage image = imageResponse.getImage();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", baos);
+                base64Image = Base64.getEncoder().encodeToString(baos.toByteArray());
+            }
 
             Map<String, String> response = new HashMap<>();
             response.put("description", imageResponse.getPrompt());
             response.put("image", "data:image/png;base64," + base64Image);
 
             return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to generate or send image", e);
+        }
+    }
+
+    @GetMapping("/all-prompts")
+    public ResponseEntity<List<PartialImageResponse>> getAllSavedPrompt() {
+        return ResponseEntity.ok(imageGenerationService.getAllSavedImagePrompt());
+    }
+
+    @GetMapping(path = "/saved-image-by-prompt", produces = MediaType.IMAGE_PNG_VALUE)
+    public void getSavedImageByPrompt(HttpServletResponse response, @RequestParam("prompt") String prompt) throws IOException {
+        try {
+            BufferedImage image = imageGenerationService.getImageByPrompt(prompt).getImage(); // Returns BufferedImage
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+            ImageIO.write(image, "png", response.getOutputStream());
+            response.flushBuffer();
         } catch (IOException e) {
             throw new RuntimeException("Failed to generate or send image", e);
         }
@@ -57,5 +80,11 @@ public class ImageGenerationController {
         } catch (IOException e) {
             throw new RuntimeException("Failed to generate or send image", e);
         }
+    }
+
+    @DeleteMapping("/saved-image/{id}")
+    public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
+        imageGenerationService.deleteImageById(id);
+        return ResponseEntity.noContent().build();
     }
 }

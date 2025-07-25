@@ -3,22 +3,31 @@ package com.rtb.the_random_value.recipe.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rtb.common.service.CommonService;
+import com.rtb.image.repository.ImageRepository;
+import com.rtb.the_random_value.recipe.dto.PartialRecipeDTO;
 import com.rtb.the_random_value.recipe.dto.RecipeDTO;
 import com.rtb.the_random_value.recipe.entity.Recipe;
 import com.rtb.the_random_value.recipe.mapper.RecipeMapper;
 import com.rtb.the_random_value.recipe.repository.RecipeRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional
 public class RandomRecipeService {
 
     private final CommonService commonService;
     private final RecipeRepository recipeRepository;
+    private final ImageRepository imageRepository;
     private final RecipeMapper recipeMapper;
 
     public RecipeDTO getRandomRecipe(String region, String ingredients, String otherConsideration) throws JsonProcessingException {
@@ -26,6 +35,8 @@ public class RandomRecipeService {
         String prompt = generatePrompt(region, ingredients, otherConsideration);
 
         String promptTextResult = commonService.getPromptTextResult(prompt);
+
+        log.info("recipe-prompt-result:\n {}", promptTextResult);
 
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(promptTextResult.replace("```", "").replace("json", ""), RecipeDTO.class);
@@ -37,9 +48,13 @@ public class RandomRecipeService {
     }
 
     public List<RecipeDTO> getAllRecipes() {
-        return recipeRepository.findAll().stream()
+        return recipeRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
                 .map(recipeMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<PartialRecipeDTO> getAllRecipeWithPartialData() {
+        return recipeRepository.findAllWithPartialData();
     }
 
     public RecipeDTO getRecipeById(Long id) {
@@ -65,7 +80,13 @@ public class RandomRecipeService {
     }
 
     public void deleteRecipe(Long id) {
-        recipeRepository.deleteById(id);
+
+        Optional<Recipe> recipe = recipeRepository.findById(id);
+
+        if (recipe.isPresent()) {
+            imageRepository.deleteByPrompt(recipe.get().getImagePrompt());
+            recipeRepository.deleteById(id);
+        }
     }
 
     private String generatePrompt(String region, String ingredients, String otherConsideration) {

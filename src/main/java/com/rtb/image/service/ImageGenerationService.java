@@ -4,22 +4,33 @@ import com.google.genai.Client;
 import com.google.genai.types.*;
 import com.rtb.common.service.CommonService;
 import com.rtb.image.dto.ImageResponse;
+import com.rtb.image.dto.PartialImageResponse;
+import com.rtb.image.entity.Image;
+import com.rtb.image.repository.ImageRepository;
+import com.rtb.image.util.ImageUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ImageGenerationService {
 
     private final Client client;
     private final CommonService commonService;
+    private final ImageRepository imageRepository;
 
     public ImageResponse generateImageByPrompt(String prompt) throws IOException {
 
@@ -27,15 +38,67 @@ public class ImageGenerationService {
             return null;
         }
 
-        return generateImage(prompt.trim());
+        Optional<Image> imageFromDB = imageRepository.findByPromptIgnoreCase(prompt);
+        if (imageFromDB.isPresent()) {
+            Image image = imageFromDB.get();
+            return new ImageResponse(image.getPrompt(), ImageUtil.byteArrayToBufferedImage(image.getImageData()), image.getImageData());
+        }
 
+        ImageResponse imageResponse = generateImage(prompt.trim());
+        saveImage(imageResponse, "png");
+        return imageResponse;
     }
 
     public ImageResponse generateRandomImage(String keywords) throws IOException {
 
         String imagePrompt = generateImagePrompt(keywords);
 
-        return generateImage(imagePrompt);
+        ImageResponse imageResponse = generateImage(imagePrompt);
+        saveImage(imageResponse, "png");
+        return imageResponse;
+    }
+
+    public Page<ImageResponse> getAllSavedImage(Pageable pageable) throws IOException {
+
+        Page<Image> images = imageRepository.findAll(pageable);
+
+        List<ImageResponse> imageResponses = new ArrayList<>();
+
+        for (Image image : images) {
+
+            imageResponses.add(new ImageResponse(image.getPrompt(), ImageUtil.byteArrayToBufferedImage(image.getImageData())));
+        }
+
+        return new PageImpl<>(imageResponses, pageable, images.getTotalElements());
+    }
+
+    public List<PartialImageResponse> getAllSavedImagePrompt() {
+
+        return imageRepository.findAllPromptsExceptFromTheRecipe();
+    }
+
+    public ImageResponse getImageByPrompt(String prompt) throws IOException {
+
+        Image image = imageRepository.findByPromptIgnoreCase(prompt).orElseThrow(() -> new RuntimeException("No Image found with this prompt"));
+        return new ImageResponse(image.getPrompt(), ImageUtil.byteArrayToBufferedImage(image.getImageData()));
+    }
+
+
+    public void saveImage(ImageResponse imageResponse, String format) throws IOException {
+
+        if (imageResponse != null) {
+
+            byte[] imageData = ImageUtil.bufferedImageToByteArray(imageResponse.getImage(), format);
+            saveImage(imageResponse.getPrompt(), imageData);
+        }
+    }
+
+    public void saveImage(String prompt, byte[] image) throws IOException {
+        imageRepository.save(new Image(null, prompt, image));
+    }
+
+    public void deleteImageById(Long id) {
+        imageRepository.deleteById(id);
     }
 
     private ImageResponse generateImage(String prompt) throws IOException {

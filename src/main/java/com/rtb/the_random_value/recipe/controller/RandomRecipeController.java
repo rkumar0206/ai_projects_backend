@@ -1,6 +1,7 @@
 package com.rtb.the_random_value.recipe.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rtb.the_random_value.recipe.dto.PartialRecipeDTO;
 import com.rtb.the_random_value.recipe.dto.RecipeDTO;
 import com.rtb.the_random_value.recipe.service.RandomRecipeService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,11 @@ public class RandomRecipeController {
     @GetMapping("/db")
     public ResponseEntity<List<RecipeDTO>> getAllRecipes() {
         return ResponseEntity.ok(randomRecipeService.getAllRecipes());
+    }
+
+    @GetMapping("/db/partial-data")
+    public ResponseEntity<List<PartialRecipeDTO>> getAllRecipesWithPartialData() {
+        return ResponseEntity.ok(randomRecipeService.getAllRecipeWithPartialData());
     }
 
     @GetMapping("/db/{id}")

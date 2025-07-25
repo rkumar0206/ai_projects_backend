@@ -9,15 +9,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecipeDTO {
+public class PartialRecipeDTO {
 
     private Long id;
     private String recipeTitle;
-    private String description;
-    private String yield;
-    private String prepTime;
-    private String cookTime;
-    private List<String> ingredients;
-    private List<String> instructions;
-    private String imagePrompt;
 }
