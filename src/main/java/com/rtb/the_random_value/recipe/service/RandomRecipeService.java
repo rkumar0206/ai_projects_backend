@@ -3,24 +3,69 @@ package com.rtb.the_random_value.recipe.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rtb.common.service.CommonService;
-import com.rtb.the_random_value.recipe.dto.RecipeResponse;
+import com.rtb.the_random_value.recipe.dto.RecipeDTO;
+import com.rtb.the_random_value.recipe.entity.Recipe;
+import com.rtb.the_random_value.recipe.mapper.RecipeMapper;
+import com.rtb.the_random_value.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RandomRecipeService {
 
     private final CommonService commonService;
+    private final RecipeRepository recipeRepository;
+    private final RecipeMapper recipeMapper;
 
-    public RecipeResponse getRandomRecipe(String region, String ingredients, String otherConsideration) throws JsonProcessingException {
+    public RecipeDTO getRandomRecipe(String region, String ingredients, String otherConsideration) throws JsonProcessingException {
 
         String prompt = generatePrompt(region, ingredients, otherConsideration);
 
         String promptTextResult = commonService.getPromptTextResult(prompt);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(promptTextResult.replace("```", "").replace("json", ""), RecipeResponse.class);
+        return objectMapper.readValue(promptTextResult.replace("```", "").replace("json", ""), RecipeDTO.class);
+    }
+
+    public RecipeDTO createRecipe(RecipeDTO dto) {
+        Recipe recipe = recipeMapper.toEntity(dto);
+        return recipeMapper.toDTO(recipeRepository.save(recipe));
+    }
+
+    public List<RecipeDTO> getAllRecipes() {
+        return recipeRepository.findAll().stream()
+                .map(recipeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public RecipeDTO getRecipeById(Long id) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + id));
+        return recipeMapper.toDTO(recipe);
+    }
+
+    public RecipeDTO updateRecipe(Long id, RecipeDTO dto) {
+        Recipe existing = recipeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + id));
+
+        existing.setRecipeTitle(dto.getRecipeTitle());
+        existing.setDescription(dto.getDescription());
+        existing.setYield(dto.getYield());
+        existing.setPrepTime(dto.getPrepTime());
+        existing.setCookTime(dto.getCookTime());
+        existing.setIngredients(dto.getIngredients());
+        existing.setInstructions(dto.getInstructions());
+        existing.setImagePrompt(dto.getImagePrompt());
+
+        return recipeMapper.toDTO(recipeRepository.save(existing));
+    }
+
+    public void deleteRecipe(Long id) {
+        recipeRepository.deleteById(id);
     }
 
     private String generatePrompt(String region, String ingredients, String otherConsideration) {

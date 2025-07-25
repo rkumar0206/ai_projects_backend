@@ -4,25 +4,29 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.genai.Client;
-import com.google.genai.types.GenerateContentConfig;
-import com.google.genai.types.GenerateContentResponse;
 import com.rtb.common.service.CommonService;
-import com.rtb.the_random_value.colors.dto.PaletteDTO;
-import com.rtb.the_random_value.colors.dto.PaletteResponseDTO;
+import com.rtb.the_random_value.colors.dto.PaletteColorDTO;
+import com.rtb.the_random_value.colors.dto.PaletteThemeDTO;
+import com.rtb.the_random_value.colors.entity.PaletteColor;
+import com.rtb.the_random_value.colors.entity.PaletteTheme;
+import com.rtb.the_random_value.colors.mapper.PaletteThemeMapper;
+import com.rtb.the_random_value.colors.repository.PaletteThemeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RandomColorsService {
 
     private final CommonService commonService;
+    private final PaletteThemeRepository repository;
+    private final PaletteThemeMapper mapper;
 
-    public PaletteResponseDTO getRandomColorPalette() throws JsonProcessingException {
+    public PaletteThemeDTO getRandomColorPalette() throws JsonProcessingException {
 
         String prompt = generatePrompt();
         String responseText = commonService.getPromptTextResult(prompt);
@@ -34,7 +38,7 @@ public class RandomColorsService {
             JsonNode root = mapper.readTree(responseText.replace("```", "").replace("json", ""));
             JsonNode paletteNode = root.get("palette");
 
-            List<PaletteDTO> paletteList = mapper.readValue(
+            List<PaletteColorDTO> paletteList = mapper.readValue(
                     paletteNode.toString(),
                     new TypeReference<>() {
                     }
@@ -48,13 +52,65 @@ public class RandomColorsService {
             String rationale = mapper.readValue(rationaleNode.toString(), new TypeReference<>() {
             });
 
-            PaletteResponseDTO paletteResponseDTO = new PaletteResponseDTO(paletteList, themeName, rationale);
-            System.out.printf("palette response dto: " + paletteResponseDTO);
+            PaletteThemeDTO paletteThemeDTO = new PaletteThemeDTO(paletteList, themeName, rationale);
+            System.out.printf("palette response dto: " + paletteThemeDTO);
 
-            return paletteResponseDTO;
+            return paletteThemeDTO;
         }
 
         return null;
+    }
+
+    public PaletteThemeDTO createPaletteTheme(PaletteThemeDTO dto) {
+        PaletteTheme entity = mapper.toEntity(dto);
+        entity.getPalette().forEach(color -> color.setPaletteTheme(entity));
+        return mapper.toDTO(repository.save(entity));
+    }
+
+    public List<PaletteThemeDTO> getAllPaletteThemes() {
+        return repository.findAll().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public PaletteThemeDTO getPaletteThemeById(Long id) {
+        PaletteTheme theme = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PaletteTheme not found with id: " + id));
+        return mapper.toDTO(theme);
+    }
+
+    public PaletteThemeDTO getPaletteByTheme(String themeName) {
+        PaletteTheme theme = repository.findByThemeNameIgnoreCase(themeName)
+                .orElseThrow(() -> new RuntimeException("PaletteTheme not found with theme: " + themeName));
+        return mapper.toDTO(theme);
+    }
+
+    public PaletteThemeDTO updatePaletteTheme(Long id, PaletteThemeDTO updatedDTO) {
+        PaletteTheme existing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PaletteTheme not found with id: " + id));
+
+        existing.setThemeName(updatedDTO.getThemeName());
+        existing.setRationale(updatedDTO.getRationale());
+
+        // Update palette list
+        existing.getPalette().clear();
+        updatedDTO.getPalette().forEach(dto -> {
+            PaletteColor color = new PaletteColor();
+            color.setHexCode(dto.getHexCode());
+            color.setColorName(dto.getColorName());
+            color.setCategory(dto.getCategory());
+            color.setPaletteTheme(existing);
+            existing.getPalette().add(color);
+        });
+
+        return mapper.toDTO(repository.save(existing));
+    }
+
+    public void deletePaletteTheme(Long id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("PaletteTheme not found with id: " + id);
+        }
+        repository.deleteById(id);
     }
 
     private String generatePrompt() {

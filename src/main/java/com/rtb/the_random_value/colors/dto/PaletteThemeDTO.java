@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaletteDTO {
-    private String hexCode;
-    private String colorName;
-    private String category;
+public class PaletteThemeDTO {
+    private List<PaletteColorDTO> palette;
+    private String themeName;
+    private String rationale;
 }
