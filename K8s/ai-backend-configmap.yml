@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-backend-config
+  namespace: ai-projects
+data:
+  POSTGRES_USER: rtb
+  POSTGRES_DB: ai_projects_db

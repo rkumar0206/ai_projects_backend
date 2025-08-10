@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-backend-deployment
+  namespace: ai-projects
+  labels:
+    app: ai-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-backend
+  template:
+    metadata:
+      labels:
+        app: ai-backend
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z ai-db-service 5432; do
+                echo "Waiting for database connection..."
+                sleep 5
+              done
+              echo "Database is up, proceeding with backend startup."
+      containers: 
+      - name: ai-backend
+        image: ai-backend:v1.0.0
+        ports:
+          - containerPort: 7070
+        envFrom:
+          - configMapRef:
+              name: ai-backend-config
+          - secretRef:
+              name: ai-backend-secret
+        startupProbe:
+          httpGet:
+            port: 7070
+            path: /actuator/health
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 30
+
+        livenessProbe:
+          httpGet:
+            port: 7070
+            path: /actuator/health/liveness
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            port: 7070
+            path: /actuator/health/readiness
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+          
+        env:
+          - name: DB_URL
+            value: 'jdbc:postgresql://ai-db-service:5432/ai_projects_db'

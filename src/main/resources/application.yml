@@ -2,7 +2,7 @@ spring:
   application:
     name: ai_projects
   datasource:
-    url: jdbc:postgresql://localhost:5433/ai_projects_db
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/ai_projects_db}
     username: rtb
     password: rtb_temp_12345
     driver-class-name: org.postgresql.Driver
@@ -19,3 +19,13 @@ server:
   port: 7070
 
 allowedOrigins: http://localhost:4200  # frontend host url
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
