@@ -4,6 +4,7 @@ import com.google.genai.Client;
 import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,13 +12,15 @@ import org.springframework.stereotype.Service;
 public class CommonService {
 
     private final Client client;
-    public static final String MODEL = "gemini-2.5-flash";
+
+    @Value("${ai.api.model}")
+    private String model;
 
     public String getPromptTextResult(String prompt) {
 
         GenerateContentResponse response =
                 client.models.generateContent(
-                        MODEL,
+                        model,
                         prompt,
                         GenerateContentConfig.builder()
                                 .responseMimeType("text/plain")
