@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +20,18 @@ public class CheatsheetGeneratorService {
 
     private final CommonService commonService;
     private final CheatSheetRepository cheatSheetRepository;
+    private final Set<String> invalidTechnologies = new HashSet<>();
 
     @Transactional
     public String generateCheatSheet(String technology) {
 
+        if (invalidTechnologies.contains(technology.toLowerCase())) {
+            throw new IllegalArgumentException("The technology entered is not valid.");
+        }
+
         // check in db first
         Optional<CheatSheet> dbResult = cheatSheetRepository.findByTechnology(technology.toLowerCase());
+
         if (dbResult.isPresent()) {
             log.info("CheatSheet found in db with technology {}", technology);
             return getHtmlFromMarkdown(dbResult.get().getCheatSheetMarkdown());
@@ -33,6 +41,11 @@ public class CheatsheetGeneratorService {
 
         String prompt = cheatsheetGeneratorPrompt(technology);
         String result = commonService.getPromptTextResult(prompt);
+
+        if (result != null && result.startsWith("false")) {
+            invalidTechnologies.add(technology.toLowerCase());
+            throw new IllegalArgumentException("The technology entered is not valid.");
+        }
 
         log.info("Generated Cheatsheet Sheet for: {}", technology);
 
@@ -76,72 +89,56 @@ public class CheatsheetGeneratorService {
 
         return """
                 #Role:
-                You are a senior-level technical writer, software architect, systems engineer, and domain expert capable of producing high-density, high-accuracy cheat sheets for any technology. You can explain programming languages, frameworks, libraries, databases, DevOps tools, cloud platforms, operating systems, networking concepts, and protocols with precision.
+                You are a senior-level technical writer, software architect, systems engineer, and domain expert capable of producing high-density, high-accuracy cheat sheets for any technology. You understand programming languages, frameworks, libraries, databases, DevOps tools, cloud platforms, operating systems, networking concepts, and protocols with precision.
                 
                 #Objective:
-                Generate a complete, deeply detailed, highly structured cheat sheet for any technology. The cheat sheet must function as a quick reference, a practical engineering companion, and an interview-focused summary. It must include fundamentals, advanced topics, examples, patterns, best practices, pitfalls, workflows, commands, tables, and architectural details.
+                Generate a complete, deeply detailed, highly structured cheat sheet for any technology. The cheat sheet must function as a quick reference guide, engineering companion, and interview-ready technical summary. It must include fundamentals, advanced insights, examples, patterns, best practices, workflows, tables, pitfalls, and architectural understanding.
                 
                 #Context:
                 The cheat sheet must:
                 - Render cleanly when converted from Markdown to HTML.
-                - ALWAYS wrap tables, code samples, commands, configurations, and ASCII diagrams inside fenced code blocks (```), ensuring visual stability in HTML.
-                - Keep headings, paragraphs, and bulleted lists OUTSIDE code blocks to ensure semantic HTML structure.
-                - Maintain predictable formatting so downstream parsing and rendering remain stable.
-                - Provide self-contained and production-relevant knowledge.
-                - Adapt to technology type:
-                  - Programming language → syntax, types, control flow, OOP, concurrency, idioms.
-                  - Framework/library → core modules, lifecycle, configs, APIs, annotations.
-                  - DevOps/cloud → commands, YAML, architecture, workflows, deployments.
-                  - Database → DDL/DML, indexing, transactions, performance tuning.
-                  - Networking/protocol → headers, message structures, flows, rules.
-                - Avoid generic statements and marketing tone.
-                - Produce deterministic, strict Markdown formatting.
-                - Never include external references or links.
+                - ALWAYS wrap tables, code samples, commands, configurations, and ASCII diagrams inside fenced code blocks (```), ensuring stable HTML rendering.
+                - Keep headings, paragraphs, and bulleted lists OUTSIDE code blocks for clean semantic HTML.
+                - Use deterministic, predictable Markdown formatting.
+                - Adapt formatting and depth based on technology type.
+                - Do not add fluff, generic statements, or external links.
+                - Provide fully self-contained content that is production-relevant.
                 
                 #Instructions:
-                - Do NOT wrap the whole output in a single fenced code block.
-                - Use regular Markdown for all headings, sections, paragraphs, and lists.
-                - Use fenced code blocks (```) ONLY for:
-                  - Tables \s
-                  - CLI commands \s
-                  - Code snippets \s
-                  - YAML/JSON configs \s
-                  - ASCII diagrams \s
-                  - Any formatted content that HTML might distort
+                - First validate the technology (User input) entered by user, if technology is not valid then just reply with false and nothing else.
+                - Do NOT wrap the entire cheat sheet inside one code block.
+                - Use fenced code blocks (```) ONLY for tables, code, configs, commands, and diagrams.
                 - Begin with a concise 2–3 sentence **Overview**.
                 - Include a **Table of Contents**.
-                - After that, create SECTIONS in the exact order below:
+                - Create the following sections in the exact order below:
                 
                   1. **Overview**
                   2. **Core Concepts**
-                  3. **Quick Syntax / Commands / API Summary** \s
-                     - All syntax tables, command tables, keyword tables MUST be inside ``` code blocks.
-                  4. **Practical Examples** \s
+                  3. **Quick Syntax / Commands / API Summary**
+                     - All syntax tables, command tables, keyword tables must be inside code blocks.
+                  4. **Practical Examples**
                      - All examples must be inside code blocks.
-                  5. **Architecture / Internal Model** \s
-                     - ASCII diagrams inside code blocks.
+                  5. **Architecture / Internal Model**
+                     - ASCII diagrams must be inside code blocks.
                   6. **Workflow & Common Use Cases**
                   7. **Best Practices**
                   8. **Advanced Topics**
-                     - Memory model \s
-                     - Concurrency & parallelism \s
-                     - Performance optimization \s
-                     - Security principles \s
-                     - Scaling strategies \s
-                     - Deep-dive internals \s
+                     - The AI must intelligently choose advanced topics appropriate to the technology.
+                     - These may include (but are not limited to): performance tuning, concurrency, memory handling, scaling techniques, security considerations, lifecycle mechanics, compilation model, protocol internals, or any deep technical aspects relevant to the given technology.
+                     - Do NOT list fixed items; customize entirely based on the user input.
                   9. **Troubleshooting & Common Pitfalls**
-                  10. **Cheat Tables** \s
-                      - All tables inside code blocks.
+                  10. **Cheat Tables**
+                      - All tables must be inside code blocks.
                   11. **Patterns / Design Patterns / Implementation Patterns**
                   12. **Interview Highlights**
-                  13. **Version Differences / Migration Notes**
+                  13. **Version Differences / Migration Notes** (if applicable)
                 
                 - Ensure:
-                  - All tables use `|` pipes and render correctly inside code blocks.
-                  - All examples are syntactically valid.
-                  - All sections contain meaningful, high-density content.
-                  - No meta explanations or filler text appears in the output.
-                  - Tone is technical, precise, and production-focused.
+                  - All tables use pipes (|) and render correctly inside code blocks.
+                  - All code samples are valid and production-grade.
+                  - Each section contains dense, meaningful information.
+                  - Output contains no meta explanations.
+                  - Tone is technical, precise, and directly useful.
                 
                 #User Input:
                 

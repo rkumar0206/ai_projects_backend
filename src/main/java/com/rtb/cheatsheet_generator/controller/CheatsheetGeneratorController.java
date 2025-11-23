@@ -18,12 +18,17 @@ public class CheatsheetGeneratorController {
     @PostMapping
     public ResponseEntity<String> generateCheatSheet(@RequestParam String technology) {
 
-//        byte[] pdfBytes = cheatsheetGeneratorService.generateCheatSheet(technology);
-//
-//        return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=" + technology + "_cheatsheet.pdf")
-//                .body(pdfBytes);
+        ResponseEntity<String> response;
 
-        return ResponseEntity.ok(cheatsheetGeneratorService.generateCheatSheet(technology));
+        try {
+            response = ResponseEntity.ok(cheatsheetGeneratorService.generateCheatSheet(technology));
+        }catch (IllegalArgumentException e) {
+            response = ResponseEntity.badRequest().body(e.getMessage());
+        }catch (Exception e) {
+            response = ResponseEntity.internalServerError().body(e.getMessage());
+        }
+
+        return response;
     }
 
 }
