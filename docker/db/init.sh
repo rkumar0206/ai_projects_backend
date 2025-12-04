@@ -17,6 +17,4 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   -- Grant all privileges on the database to the user
   GRANT ALL PRIVILEGES ON DATABASE "$POSTGRES_DB" TO "$POSTGRES_USER";
 
-  -- Update the password for the default 'postgres' user
-  ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';
 EOSQL

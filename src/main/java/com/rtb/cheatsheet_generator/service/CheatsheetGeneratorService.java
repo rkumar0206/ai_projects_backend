@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -57,6 +58,16 @@ public class CheatsheetGeneratorService {
         ));
 
         return getHtmlFromMarkdown(result);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> findAllTechnologies() {
+        return cheatSheetRepository.findAllTechnologies();
+    }
+
+    @Transactional
+    public void deleteByTechnology(String technology) {
+        cheatSheetRepository.deleteByTechnology(technology);
     }
 
     private String getHtmlFromMarkdown(String cheatSheetMarkdown) {
