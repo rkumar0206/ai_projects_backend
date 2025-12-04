@@ -5,9 +5,6 @@
 ```docker-compose.yaml
 services:
   ai-backend:
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
     image: rkumar0206/ai-backend:v1.1.0
     container_name: ai-backend
     env_file:
@@ -25,10 +22,7 @@ services:
       - ai-network
 
   ai-db:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-    image: rkumar0206/ai-db:v1.0.0
+    image: rkumar0206/ai-db:latest
     container_name: ai-db
     env_file:
       - .env
@@ -44,9 +38,6 @@ services:
       - ai-network
 
   ai-frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: rkumar0206/ai-frontend:v1.2.0
     container_name: ai-frontend
     ports:
