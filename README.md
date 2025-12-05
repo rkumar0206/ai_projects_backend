@@ -22,7 +22,7 @@ services:
       - ai-network
 
   ai-db:
-    image: rkumar0206/ai-db:latest
+    image: rkumar0206/ai-db:v1.0.0
     container_name: ai-db
     env_file:
       - .env
