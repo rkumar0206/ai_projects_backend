@@ -3,7 +3,6 @@ package com.rtb.cheatsheet_generator.service;
 import com.rtb.cheatsheet_generator.db.CheatSheet;
 import com.rtb.cheatsheet_generator.db.CheatSheetRepository;
 import com.rtb.common.service.CommonService;
-import com.rtb.common.service.MarkdownService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static com.rtb.common.service.MarkdownService.getHtmlFromMarkdown;
 
 @Service
 @RequiredArgsConstructor
@@ -68,32 +69,6 @@ public class CheatsheetGeneratorService {
     @Transactional
     public void deleteByTechnology(String technology) {
         cheatSheetRepository.deleteByTechnology(technology);
-    }
-
-    private String getHtmlFromMarkdown(String cheatSheetMarkdown) {
-
-        String html = sanitizeHtml(MarkdownService.markdownToHtml(cheatSheetMarkdown));
-
-        return """
-                <!DOCTYPE html>
-                <html xmlns="http://www.w3.org/1999/xhtml">
-                <head>
-                    <meta charset="UTF-8"/>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; }
-                        code { font-family: monospace; }
-                    </style>
-                </head>
-                <body>
-                    %s
-                </body>
-                </html>
-                """.formatted(html);
-    }
-
-    String sanitizeHtml(String html) {
-        return html.replaceAll("<br>", "<br/>").replaceAll("<hr>", "<hr/>").replaceAll("<img(.*?)>", "<img$1/>");
     }
 
     private String cheatsheetGeneratorPrompt(String technology) {

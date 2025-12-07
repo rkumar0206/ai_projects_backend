@@ -14,4 +14,33 @@ public class MarkdownService {
 
         return renderer.render(parser.parse(markdownText));
     }
+
+    public static String getHtmlFromMarkdown(String cheatSheetMarkdown) {
+
+        String html = sanitizeHtml(MarkdownService.markdownToHtml(cheatSheetMarkdown));
+
+        return """
+                <!DOCTYPE html>
+                <html xmlns="http://www.w3.org/1999/xhtml">
+                <head>
+                    <meta charset="UTF-8"/>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; }
+                        code { font-family: monospace; }
+                    </style>
+                </head>
+                <body>
+                    %s
+                </body>
+                </html>
+                """.formatted(html);
+    }
+
+    private static String sanitizeHtml(String html) {
+        return html.replaceAll("<br>", "<br/>").replaceAll("<hr>", "<hr/>").replaceAll("<img(.*?)>", "<img$1/>");
+    }
+
+    private MarkdownService() {}
+
 }
