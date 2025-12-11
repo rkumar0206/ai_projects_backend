@@ -58,6 +58,11 @@ public class ImageGenerationService {
         return imageResponse;
     }
 
+    public String generateRandomImagePrompt(String keywords) throws IOException {
+
+        return generateImagePrompt(keywords);
+    }
+
     public Page<ImageResponse> getAllSavedImage(Pageable pageable) throws IOException {
 
         Page<Image> images = imageRepository.findAll(pageable);
@@ -175,15 +180,23 @@ public class ImageGenerationService {
 
     private String generateImagePrompt(String keywords) {
 
-        String prompt = "As an expert AI image prompt generator, your task is to create a single, highly descriptive, and imaginative text prompt suitable for advanced AI art generation models (e.g., Midjourney, DALL-E, Stable Diffusion).\n" +
-                "\n" +
-                "**Key Requirements:**\n" +
-                "1.  **Creativity & Specificity:** Generate a unique and vivid scene description. Include details such as the main subject(s), action, setting, time of day/lighting, mood/atmosphere, and an identifiable art style or aesthetic (e.g., 'cyberpunk', 'renaissance painting', 'photorealistic', 'fantasy art', 'abstract').\n" +
-                "2.  **Keyword Integration (if provided):**\n" +
-                "    *   If the user provides specific keywords, integrate them prominently and naturally into the core concept of the generated image prompt. These keywords should act as central elements or critical modifiers (e.g., a primary subject, a key object, or a dominant mood).\n" +
-                "    *   If no keywords are provided, generate a completely original and varied prompt, exploring diverse subjects, styles, and scenarios without external constraints.\n" +
-                "3.  **Format:** The output must be a single, continuous text string (e.g., a comma-separated list of descriptors or a coherent sentence/phrase), ready to be directly input into an image generator.\n" +
-                "Keywords: " + keywords;
+        String prompt = """
+                **Role**:
+                Act as a master-level AI image prompt architect capable of producing a single, deeply detailed, highly imaginative prompt suitable for advanced image-generation models such as Midjourney, DALL·E, and Stable Diffusion.
+                
+                **Context**:
+                You will receive optional user-provided keywords. These keywords, if present, must be integrated naturally and prominently into the core concept of the generated prompt. If no keywords are provided, you must craft an entirely original, richly varied, and unexpected scene. The output must always be a single continuous text string that can be directly fed into an image generator.
+                
+                **Objective**:
+                - Objective 1: Produce one vivid, richly descriptive, fully realized scene prompt featuring clear subjects, actions, environment, lighting, mood, and a distinct artistic style.
+                - Objective 2: Ensure the prompt is imaginative, surprising, and visually powerful, avoiding generic or repetitive formulations.
+                
+                **Instructions**:
+                - Instruction 1: If keywords are provided, weave them into the scene as central focal elements—either as primary subjects, dominant visual motifs, or defining atmospheric traits. If no keywords are given, create a unique concept with fresh world-building.
+                - Instruction 2: Output a single flowing text string containing descriptors and scene details separated by commas or written as a coherent descriptive phrase. Do not include meta-commentary, explanations, or formatting outside of the final prompt string.
+                
+                Keywords: %s
+                """.formatted(keywords);
 
         return commonService.getPromptTextResult(prompt);
     }

@@ -44,7 +44,7 @@ public class CheatsheetGeneratorService {
         String prompt = cheatsheetGeneratorPrompt(technology);
         String result = commonService.getPromptTextResult(prompt);
 
-        if (result != null && result.startsWith("false")) {
+        if (result != null && result.toLowerCase().trim().startsWith("false")) {
             invalidTechnologies.add(technology.toLowerCase());
             throw new IllegalArgumentException("The technology entered is not valid.");
         }

@@ -42,8 +42,27 @@ public class RandomImageGenerationController {
             response.put("image", "data:image/png;base64," + base64Image);
 
             return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to generate or send image", e);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Failed to generate random image.");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/image-prompt")
+    public ResponseEntity<Map<String, String>> getImagePrompt(@RequestParam(value = "keywords", required = false) String keywords) {
+        try {
+
+            String prompt = imageGenerationService.generateRandomImagePrompt(keywords);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("description", prompt);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Failed to generate random image prompt.");
+            return ResponseEntity.internalServerError().body(response);
         }
     }
 }
