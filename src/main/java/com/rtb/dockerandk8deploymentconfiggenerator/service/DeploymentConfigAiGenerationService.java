@@ -55,8 +55,8 @@ public class DeploymentConfigAiGenerationService {
 
         byte[] bytes = zipYamlFiles(files);
 
-        Path zipFilePath = Paths.get("src/main/resources/static/output.zip");
-        Files.write(zipFilePath, bytes);
+//        Path zipFilePath = Paths.get("src/main/resources/static/output.zip");
+//        Files.write(zipFilePath, bytes);
         return bytes;
     }
 
