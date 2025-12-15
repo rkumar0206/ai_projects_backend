@@ -3,7 +3,7 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    image: rkumar0206/ai-backend:v1.3.0
+    image: rkumar0206/ai-backend:v1.4.0
     container_name: ai-backend
     env_file:
       - .env

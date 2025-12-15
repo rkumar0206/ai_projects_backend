@@ -5,7 +5,7 @@
 ```docker-compose.yaml
 services:
   ai-backend:
-    image: rkumar0206/ai-backend:v1.3.0
+    image: rkumar0206/ai-backend:v1.4.0
     container_name: ai-backend
     env_file:
       - .env
@@ -38,7 +38,7 @@ services:
       - ai-network
 
   ai-frontend:
-    image: rkumar0206/ai-frontend:v1.4.0
+    image: rkumar0206/ai-frontend:v1.5.0
     container_name: ai-frontend
     ports:
       - "7071:80"
