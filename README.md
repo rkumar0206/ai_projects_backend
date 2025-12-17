@@ -1,3 +1,11 @@
+## Screenshots
+<img width="1703" height="904" alt="Screenshot 2025-12-15 at 10 06 52 AM" src="https://github.com/user-attachments/assets/cd22c10e-0408-410a-a44b-66a582cc62b3" />
+<img width="1664" height="851" alt="Screenshot 2025-12-15 at 10 07 02 AM" src="https://github.com/user-attachments/assets/d96a1762-3bf9-4d77-9d19-f0603392476e" />
+<img width="1707" height="944" alt="Screenshot 2025-12-15 at 10 07 18 AM" src="https://github.com/user-attachments/assets/4f6d44af-490d-46eb-a19a-9528363cac32" />
+<img width="1704" height="948" alt="Screenshot 2025-12-15 at 10 07 28 AM" src="https://github.com/user-attachments/assets/72c31170-7439-4bbe-a715-4b15ac0d77fc" />
+<img width="1707" height="945" alt="Screenshot 2025-12-15 at 10 07 36 AM" src="https://github.com/user-attachments/assets/a3d3ef66-4add-4b56-9db6-4a3857ab20b0" />
+
+
 ## How to use it in local using docker compose file
 
 #### Step 1. Copy below docker compose file
