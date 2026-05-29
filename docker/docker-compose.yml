@@ -3,6 +3,7 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
+    platform: linux/amd64
     image: rkumar0206/ai-backend:v1.4.0
     container_name: ai-backend
     env_file:
@@ -23,6 +24,7 @@ services:
     build:
       context: ./db
       dockerfile: Dockerfile
+    platform: linux/amd64
     image: rkumar0206/ai-db:v1.0.0
     container_name: ai-db
     env_file:
