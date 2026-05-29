@@ -16,12 +16,12 @@ public class CheatsheetGeneratorController {
     private final CheatsheetGeneratorService cheatsheetGeneratorService;
 
     @PostMapping
-    public ResponseEntity<String> generateCheatSheet(@RequestParam String technology) {
+    public ResponseEntity<String> generateCheatSheet(@RequestParam String technology, @RequestParam(value = "useOllama", required = false) boolean useOllama) {
 
         ResponseEntity<String> response;
 
         try {
-            response = ResponseEntity.ok(cheatsheetGeneratorService.generateCheatSheet(technology));
+            response = ResponseEntity.ok(cheatsheetGeneratorService.generateCheatSheet(technology, useOllama));
         }catch (IllegalArgumentException e) {
             response = ResponseEntity.badRequest().body(e.getMessage());
         }catch (Exception e) {

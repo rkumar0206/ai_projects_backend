@@ -4,6 +4,7 @@ import com.google.genai.Client;
 import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class CommonService {
 
     private final Client client;
+    private final ChatClient chatClient;
 
     @Value("${ai.api.model}")
     private String model;
@@ -30,5 +32,9 @@ public class CommonService {
 
         return response.text();
 
+    }
+
+    public String getPromptTextResultFromOllama(String prompt) {
+        return chatClient.prompt().user(prompt).call().content();
     }
 }

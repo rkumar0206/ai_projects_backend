@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.rtb.common.service.MarkdownService.getHtmlFromMarkdown;
 
@@ -25,7 +22,7 @@ public class CheatsheetGeneratorService {
     private final Set<String> invalidTechnologies = new HashSet<>();
 
     @Transactional
-    public String generateCheatSheet(String technology) {
+    public String generateCheatSheet(String technology, boolean useOllama) {
 
         if (invalidTechnologies.contains(technology.toLowerCase())) {
             throw new IllegalArgumentException("The technology entered is not valid.");
@@ -42,7 +39,14 @@ public class CheatsheetGeneratorService {
         log.info("Generating Cheatsheet Sheet for: {}", technology);
 
         String prompt = cheatsheetGeneratorPrompt(technology);
-        String result = commonService.getPromptTextResult(prompt);
+
+        String result;
+
+        if (useOllama) {
+            result = commonService.getPromptTextResultFromOllama(prompt);
+        } else {
+            result = commonService.getPromptTextResult(prompt);
+        }
 
         if (result != null && result.toLowerCase().trim().startsWith("false")) {
             invalidTechnologies.add(technology.toLowerCase());
