@@ -20,7 +20,7 @@ services:
     environment:
       DB_URL: 'jdbc:postgresql://ai-db:5432/ai_projects_db'
       GEMINI_API_KEY: ${GEMINI_API_KEY}
-      MODEL: ${MODEL}
+      GEMINI_MODEL: ${MODEL}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     ports:
       - "7070:7070"
